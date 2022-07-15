@@ -1,0 +1,19 @@
+{
+  "name": "wotu",
+  "version": "1.0.0",
+  "description": "Will Of The Universe",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PiterYeh/wotu.git"
+  },
+  "author": "Pietro Caldana",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PiterYeh/wotu/issues"
+  },
+  "homepage": "https://github.com/PiterYeh/wotu#readme"
+}
