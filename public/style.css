@@ -1,0 +1,54 @@
+html, body, main {
+	height: 100%;
+	background-color: black;
+	color: white;
+	padding: 0;
+	margin: 0;
+	overflow:  hidden;
+	touch-action: none;
+}
+main {
+	position: relative;
+}
+#dbg {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	z-index: 1;
+	pointer-events: none;
+}
+
+.finger {
+	position: absolute;
+	border-radius: 9999px;
+	background-color: yellow;
+	animation: popin 250ms ease;
+}
+.finger.ded {
+	animation-fill-mode: forward;
+	animation: popout 250ms ease;
+}
+
+@keyframes popin {
+	from {
+		transform:  scale(0);
+	}
+	80% {
+		transform:  scale(1.2);
+	}
+	to {
+		transform:  scale(1);
+	}
+}
+
+@keyframes popout {
+	from {
+		transform:  scale(1);
+	}
+	20% {
+		transform:  scale(1.2);
+	}
+	to {
+		transform:  scale(0);
+	}
+}
