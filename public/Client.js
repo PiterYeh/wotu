@@ -2,15 +2,24 @@ export default class Client {
 	constructor(roomName) {
 		this.q = [];
 		this.isOpen = false;
-		this.ws = new WebSocket(`${(location.protocol == 'https:' ? 'wss' : 'ws')}://${location.hostname}:${location.port}/listen?room=${roomName}`);
+		this.ws = null;
 		this.onMessage = null;
+		this.connect(roomName);
+	}
+
+	connect(roomName) {
+		let self = this;
+		this.ws = new WebSocket(`${(location.protocol == 'https:' ? 'wss' : 'ws')}://${location.hostname}:${location.port}/listen?room=${roomName}`);
 		this.ws.onopen = () => {
 			this.isOpen = true;
 			for(let msg of this.q)
 				this.ws.send(msg);
 			this.q.length = 0;
 		};
-		let self = this;
+		this.ws.onclose = function() {
+			this.isOpen = false;
+			setTimeout(() => self.connect(roomName), 1000);
+		};
 		this.ws.onmessage = function(msg) {
 			if(typeof self.onMessage !== 'function')
 				throw new Error('no cb found');
