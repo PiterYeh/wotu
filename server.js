@@ -9,6 +9,9 @@ const Room = require('./Room.js');
 
 const app = express();
 const port = process.env.PORT || 3000;
+const isProd = true;
+const pingInterval = isProd ? 30 : 3;
+
 let vocabulary = null;
 let roomsByName = {};
 loadVocabulary();
@@ -33,37 +36,76 @@ let server = app.listen(port, () => {
 setupWebSockets(server);
 
 function setupWebSockets(expressServer) {
+	// build server
 	const websocketServer = new WebSocket.Server({
-		noServer: true
+		noServer: true,
 	});
 
+	// handle upgrade requests
 	expressServer.on('upgrade', (request, socket, head) => {
 		websocketServer.handleUpgrade(request, socket, head, (websocket) => {
 			websocketServer.emit('connection', websocket, request);
 		});
 	});
 
-	websocketServer.on('connection', function connection(websocketConnection, connectionRequest) {
+	// manage client
+	websocketServer.on('connection', function connection(ws, connectionRequest) {
+		ws.isAlive = true;
+		ws.on('pong', () => ws.isAlive = true);
 		let userId = readCookie(connectionRequest, 'wotuUserId');
 		let roomName = connectionRequest.url;
-		console.log('room name is', roomName);
 		let room = getRoom(roomName);
 		let user = room.getUser(userId);
-		user.connection = websocketConnection;
+		user.connection = ws;
 
-		websocketConnection.on('message', function (messageJSON) {
+		// update the internal state and broadcast the user's fingers to all other users
+		ws.on('message', function (messageJSON) {
 			let message = JSON.parse(messageJSON);
 			user.setFingers(message.fingers);
-			for(let otherUser of room.users) {
-				if(otherUser.id == user.id)
-					continue;
-				otherUser.connection.send(JSON.stringify({
-					userId: user.id,
-					fingers: user.fingers
-				}));
-			}
+			room.broadcast(user);
 		});
 	});
+
+	// periodically check if clients are still alive
+	setInterval(function () {
+		for(let roomName in roomsByName) {
+			let room = roomsByName[roomName];
+			for(let user of room.users) {
+				let ws = user.connection;
+				if (ws.isAlive === false) {
+					if(!isProd)
+						console.log('killing user', user.id, ' in room', roomName, 'leaving', room.users.length - 1, 'users left');
+					ws.terminate();
+					user.setFingers([]);
+					room.broadcast(user);
+					room.removeUser(user.id);
+				}
+				else {
+					ws.isAlive = false;
+					ws.ping();
+				}
+			}
+		}
+
+		// destroy empty rooms
+		let roomsToKill = [];
+		for(let roomName in roomsByName) {
+			let room = roomsByName[roomName];
+			if(room.users.length == 0)
+				roomsToKill.push(roomName);
+		}
+		for(let roomName of roomsToKill) {
+			if(!isProd)
+				console.log('killing room', roomName);
+			delete roomsByName[roomName];
+		}
+	}, pingInterval * 1000);
+
+	if(!isProd)
+		setInterval(function() {
+			console.log('rooms active', Object.keys(roomsByName).length, Object.keys(roomsByName));
+		}, 1 * 1000);
+
 	return websocketServer;
 }
 
