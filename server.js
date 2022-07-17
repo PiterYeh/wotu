@@ -34,8 +34,7 @@ setupWebSockets(server);
 
 function setupWebSockets(expressServer) {
 	const websocketServer = new WebSocket.Server({
-		noServer: true,
-		path: '/listen',
+		noServer: true
 	});
 
 	expressServer.on('upgrade', (request, socket, head) => {
@@ -46,7 +45,8 @@ function setupWebSockets(expressServer) {
 
 	websocketServer.on('connection', function connection(websocketConnection, connectionRequest) {
 		let userId = readCookie(connectionRequest, 'wotuUserId');
-		let roomName = connectionRequest.url.split('?')[1].split('=')[1];
+		let roomName = connectionRequest.url;
+		console.log('room name is', roomName);
 		let room = getRoom(roomName);
 		let user = room.getUser(userId);
 		user.connection = websocketConnection;

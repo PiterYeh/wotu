@@ -9,7 +9,7 @@ export default class Client {
 
 	connect(roomName) {
 		let self = this;
-		this.ws = new WebSocket(`${(location.protocol == 'https:' ? 'wss' : 'ws')}://${location.hostname}:${location.port}/listen?room=${roomName}`);
+		this.ws = new WebSocket(`${(location.protocol == 'https:' ? 'wss' : 'ws')}://${location.hostname}:${location.port}/${roomName}`);
 		this.ws.onopen = () => {
 			this.isOpen = true;
 			for(let msg of this.q)
