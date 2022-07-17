@@ -2,7 +2,7 @@ export default class Client {
 	constructor(roomName) {
 		this.q = [];
 		this.isOpen = false;
-		this.ws = new WebSocket(`ws://${location.hostname}:${location.port}/listen?room=${roomName}`);
+		this.ws = new WebSocket(`${(location.protocol == 'https:' ? 'wss' : 'ws')}://${location.hostname}:${location.port}/listen?room=${roomName}`);
 		this.onMessage = null;
 		this.ws.onopen = () => {
 			this.isOpen = true;
