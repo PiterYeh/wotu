@@ -23,6 +23,7 @@ main {
 	border-radius: 9999px;
 	background-color: yellow;
 	animation: popin 250ms ease;
+	pointer-events: none;
 }
 .finger.ded {
 	animation-fill-mode: forward;

@@ -28,7 +28,7 @@ app.use('/', function(req, res) {
 });
 
 let server = app.listen(port, () => {
-	console.log(`Example app listening on port ${port}`);
+	console.log(`listening on port ${port}`);
 });
 setupWebSockets(server);
 
@@ -39,7 +39,6 @@ function setupWebSockets(expressServer) {
 	});
 
 	expressServer.on('upgrade', (request, socket, head) => {
-		console.log('upgrade request');
 		websocketServer.handleUpgrade(request, socket, head, (websocket) => {
 			websocketServer.emit('connection', websocket, request);
 		});
@@ -48,10 +47,21 @@ function setupWebSockets(expressServer) {
 	websocketServer.on('connection', function connection(websocketConnection, connectionRequest) {
 		let userId = readCookie(connectionRequest, 'wotuUserId');
 		let roomName = connectionRequest.url.split('?')[1].split('=')[1];
+		let room = getRoom(roomName);
+		let user = room.getUser(userId);
+		user.connection = websocketConnection;
 
-		console.log('ws connected!', userId, roomName);
-		websocketConnection.on('message', (message) => {
-			websocketConnection.send('you said ' + message)
+		websocketConnection.on('message', function (messageJSON) {
+			let message = JSON.parse(messageJSON);
+			user.setFingers(message.fingers);
+			for(let otherUser of room.users) {
+				if(otherUser.id == user.id)
+					continue;
+				otherUser.connection.send(JSON.stringify({
+					userId: user.id,
+					fingers: user.fingers
+				}));
+			}
 		});
 	});
 	return websocketServer;

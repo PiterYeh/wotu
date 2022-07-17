@@ -1,13 +1,13 @@
 export default class Finger {
-	constructor(x, y, parent, id) {
+	constructor(x, y, parent, id, color) {
 		this.x = 0;
 		this.y = 0;
 		this.alive = true;
 		this.killed = false;
 		this.element = null;
-		this.radius = 50;
+		this.radius = 100;
 		this.id = id;
-		this.color = `hsla(${Math.random() * 360}, 50%, 50%, 1)`;
+		this.color = color || `hsla(${Math.random() * 360}, 50%, 50%, 1)`;
 
 		this.init(x, y, parent);
 	}
@@ -41,7 +41,7 @@ export default class Finger {
 
 	kill(fingers) {
 		if(this.killed)
-			return;
+			return false;
 		this.killed = true;
 		this.element.classList.add('ded');
 		setTimeout(x => {
@@ -50,5 +50,6 @@ export default class Finger {
 			if(idx != -1)
 				fingers.splice(idx, 1);
 		}, 250);
+		return true;
 	}
 }

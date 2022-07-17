@@ -1,11 +1,12 @@
 import Finger from './Finger.js';
 import Client from './Client.js';
+import User from './User.js';
 
 let fingers = [];
-let fingerRadius = 50;
+let users = [];
 const isTouch = navigator.maxTouchPoints > 0;
 let client = new Client(getRoomName());
-client.onMessage = console.log;
+client.onMessage = updateUser;
 
 let main = document.getElementsByTagName('main')[0];
 
@@ -13,10 +14,6 @@ if(isTouch)
 	setupTouchEvents(main, fingers);
 else
 	setupMouseEvents(main, fingers);
-
-function findFinger(x, y) {
-	return fingers.find(f => f.distance(x, y) < fingerRadius);
-}
 
 function setupMouseEvents(main, fingers) {
 	main.addEventListener('mousedown', function(e) {
@@ -52,7 +49,7 @@ function updateTouches(e) {
 		if(finger == null) {
 			let finger = new Finger(touch.clientX, touch.clientY, main, touch.identifier);
 			fingers.push(finger);
-			notifyNew(finger);
+			notifyWs();
 		}
 		else {
 			finger.alive = true;
@@ -84,10 +81,23 @@ function getRoomName() {
 
 function notifyWs() {
 	client.send({
-		fingers: fingers.map(finger => ({
-			x: finger.x / document.body.clientWidth,
-			y: finger.y / document.body.clientHeight,
-			color: finger.color
-		}))
+		fingers: fingers
+			.filter(x => !x.killed)
+			.map(finger => ({
+				id: finger.id,
+				x: finger.x / document.body.clientWidth,
+				y: finger.y / document.body.clientHeight,
+				color: finger.color
+			}))
 	})
+}
+
+function updateUser(msgJSON) {
+	let msg = JSON.parse(msgJSON);
+	let user = users.find(x => x.id == msg.userId);
+	if(user == null) {
+		user = new User(msg.userId);
+		users.push(user);
+	}
+	user.updateFingers(main, msg.fingers);
 }

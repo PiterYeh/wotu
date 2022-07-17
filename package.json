@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/PiterYeh/wotu#readme",
   "engines": {
-    "node": "16.16.0"
+    "node": "12.22.12"
   },
   "dependencies": {
     "cookie-parser": "^1.4.6",
