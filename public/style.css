@@ -24,6 +24,7 @@ main {
 	background-color: yellow;
 	animation: popin 250ms ease;
 	pointer-events: none;
+	transition: top 100ms ease, left 100ms ease;
 }
 .finger.ded {
 	animation-fill-mode: forward;
