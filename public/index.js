@@ -17,7 +17,7 @@ else
 
 function setupMouseEvents(main, fingers) {
 	main.addEventListener('mousedown', function(e) {
-		let finger = new Finger(e.clientX, e.clientY, main, 'mouse');
+		let finger = new Finger(e.clientX, e.clientY, main, 'mouse', null, false);
 		fingers.push(finger);
 		notifyWs();
 	});
@@ -47,7 +47,7 @@ function updateTouches(e) {
 	for(let touch of e.touches) {
 		let finger = fingers.find(x => x.id == touch.identifier);
 		if(finger == null) {
-			let finger = new Finger(touch.clientX, touch.clientY, main, touch.identifier);
+			let finger = new Finger(touch.clientX, touch.clientY, main, touch.identifier, null, false);
 			fingers.push(finger);
 			notifyWs();
 		}

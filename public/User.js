@@ -16,7 +16,7 @@ export default class User {
 				oldFinger.move(newX, newY);
 			}
 			else {
-				let finger = new Finger(newX, newY, parent, newFinger.id, newFinger.color);
+				let finger = new Finger(newX, newY, parent, newFinger.id, newFinger.color, true);
 				this.fingers.push(finger);
 			}
 		}

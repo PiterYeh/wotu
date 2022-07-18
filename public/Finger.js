@@ -1,5 +1,5 @@
 export default class Finger {
-	constructor(x, y, parent, id, color) {
+	constructor(x, y, parent, id, color, remote) {
 		this.x = 0;
 		this.y = 0;
 		this.alive = true;
@@ -7,6 +7,7 @@ export default class Finger {
 		this.element = null;
 		this.radius = 100;
 		this.id = id;
+		this.remote = remote;
 		this.color = color || `hsla(${Math.random() * 360}, 50%, 50%, 1)`;
 
 		this.init(x, y, parent);
@@ -32,6 +33,8 @@ export default class Finger {
 	init(x, y, parent) {
 		this.element = document.createElement('div');
 		this.element.classList.add('finger');
+		if(this.remote)
+			this.element.classList.add('remote');
 		this.element.style.width = this.radius + 'px';
 		this.element.style.height = this.radius + 'px';
 		this.element.style.backgroundColor = this.color;
