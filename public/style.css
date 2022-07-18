@@ -26,11 +26,11 @@ main {
 	pointer-events: none;
 }
 .finger.remote {
-	transition: top 100ms ease, left 100ms ease;
+	transition: top 100ms linear, left 100ms linear;
 }
 .finger.ded {
-	animation-fill-mode: forward;
 	animation: popout 250ms ease;
+	animation-fill-mode: forwards;
 }
 
 @keyframes popin {

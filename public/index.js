@@ -79,7 +79,22 @@ function getRoomName() {
 	return tokens[tokens.length - 1];
 }
 
+
+let lastSend = null;
+let sendPlanned = false;
+let debounceMs = 16;
 function notifyWs() {
+	let now = new Date();
+	let elapsed = now - lastSend;
+	if(elapsed < debounceMs) {
+		if(!sendPlanned) {
+			setTimeout(notifyWs, debounceMs - elapsed);
+			sendPlanned = true;
+		}
+		return;
+	}
+	lastSend = now;
+	sendPlanned = false;
 	client.send({
 		fingers: fingers
 			.filter(x => !x.killed)
