@@ -24,6 +24,7 @@ main {
 	background-color: yellow;
 	animation: popin 250ms ease;
 	pointer-events: none;
+	opacity: .7;
 }
 .finger.remote {
 	transition: top 100ms linear, left 100ms linear;
