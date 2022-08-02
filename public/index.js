@@ -28,10 +28,16 @@ function setupMouseEvents(main, fingers) {
 		}
 	});
 	main.addEventListener('mousemove', function(e) {
-		for(let finger of fingers) {
-			finger.move(e.clientX, e.clientY);
-			notifyWs();
-		}
+		if(e.buttons === 0)
+			for(let finger of fingers) {
+				finger.kill(fingers);
+				notifyWs();
+			}
+		else
+			for(let finger of fingers) {
+				finger.move(e.clientX, e.clientY);
+				notifyWs();
+			}
 	});
 }
 
